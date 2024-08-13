@@ -164,22 +164,22 @@ interface EncrypterInterface
      *----------------------------------------*/
 
     /**
-     * encrypt string
+     * encrypt data
      * 
-     * @param string $data
+     * @param mixed $data
      * @return string
      */
-    public function encrypt(string $data): string;
+    public function encrypt(mixed $data): string;
 
     /*----------------------------------------*
      * Decrypt
      *----------------------------------------*/
 
     /**
-     * decrypt string
+     * decrypt data
      * 
      * @param string $data
-     * @return string
+     * @return mixed
      */
-    public function decrypt(string $data): string;
+    public function decrypt(string $data): mixed;
 }

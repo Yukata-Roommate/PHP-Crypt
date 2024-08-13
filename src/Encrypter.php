@@ -244,26 +244,20 @@ class Encrypter implements EncrypterInterface
      *----------------------------------------*/
 
     /**
-     * encrypt string
+     * encrypt data
      * 
-     * @param string $data
+     * @param mixed $data
      * @return string
      */
-    public function encrypt(string $data): string
+    public function encrypt(mixed $data): string
     {
-        $algorithm = $this->algorithm();
+        $serialized = serialize($data);
 
-        if (is_null($algorithm)) throw new \Exception("encrypt algorithm is not set.");
-
-        $key = $this->key();
-
-        if (is_null($key)) throw new \Exception("encrypt key is not set.");
-
-        $ivSize = openssl_cipher_iv_length($algorithm->value);
+        $ivSize = openssl_cipher_iv_length($this->algorithmValueForce());
 
         $iv = openssl_random_pseudo_bytes($ivSize);
 
-        $encrypted = openssl_encrypt($data, $algorithm->value, $key, OPENSSL_RAW_DATA, $iv);
+        $encrypted = openssl_encrypt($serialized, $this->algorithmValueForce(), $this->keyForce(), OPENSSL_RAW_DATA, $iv);
 
         return base64_encode("$iv$encrypted");
     }
@@ -273,29 +267,55 @@ class Encrypter implements EncrypterInterface
      *----------------------------------------*/
 
     /**
-     * decrypt string
+     * decrypt data
      * 
      * @param string $data
-     * @return string
+     * @return mixed
      */
-    public function decrypt(string $data): string
+    public function decrypt(string $data): mixed
     {
-        $algorithm = $this->algorithm();
-
-        if (is_null($algorithm)) throw new \Exception("decrypt algorithm is not set.");
-
-        $key = $this->key();
-
-        if (is_null($key)) throw new \Exception("decrypt key is not set.");
-
         $data = base64_decode($data);
 
-        $ivSize = openssl_cipher_iv_length($algorithm->value);
+        $ivSize = openssl_cipher_iv_length($this->algorithmValueForce());
 
         $iv = substr($data, 0, $ivSize);
 
         $encrypted = substr($data, $ivSize);
 
-        return openssl_decrypt($encrypted, $algorithm->value, $key, OPENSSL_RAW_DATA, $iv);
+        $decrypted = openssl_decrypt($encrypted, $this->algorithmValueForce(), $this->keyForce(), OPENSSL_RAW_DATA, $iv);
+
+        return unserialize($decrypted);
+    }
+
+    /*----------------------------------------*
+     * Not Public
+     *----------------------------------------*/
+
+    /**
+     * get algorithm value force
+     * 
+     * @return string
+     */
+    protected function algorithmValueForce(): string
+    {
+        $algorithm = $this->algorithm();
+
+        if (is_null($algorithm)) throw new \Exception("algorithm is not set.");
+
+        return $algorithm->value;
+    }
+
+    /**
+     * get key force
+     * 
+     * @return string
+     */
+    protected function keyForce(): string
+    {
+        $key = $this->key();
+
+        if (is_null($key)) throw new \Exception("key is not set.");
+
+        return $key;
     }
 }

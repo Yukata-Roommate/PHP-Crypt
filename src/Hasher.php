@@ -111,10 +111,24 @@ class Hasher implements HasherInterface
      */
     public function hash(string $data): string
     {
+        return hash($this->algorithmValueForce(), $data);
+    }
+
+    /*----------------------------------------*
+     * Not Public
+     *----------------------------------------*/
+
+    /**
+     * get algorithm value force
+     * 
+     * @return string
+     */
+    protected function algorithmValueForce(): string
+    {
         $algorithm = $this->algorithm();
 
-        if (is_null($algorithm)) throw new \Exception("hash algorithm is not set.");
+        if (is_null($algorithm)) throw new \Exception("algorithm is not set.");
 
-        return hash($algorithm->value, $data);
+        return $algorithm->value;
     }
 }

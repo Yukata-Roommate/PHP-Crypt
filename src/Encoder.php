@@ -81,15 +81,11 @@ class Encoder implements EncoderInterface
      */
     public function encode(string $data): string
     {
-        $algorithm = $this->algorithm();
-
-        if (is_null($algorithm)) throw new \Exception("encode algorithm is not set.");
-
-        return match ($algorithm) {
+        return match ($this->algorithmForce()) {
             EncodeAlgorithmEnum::BASE64 => base64_encode($data),
             EncodeAlgorithmEnum::HEX    => bin2hex($data),
 
-            default                     => throw new \Exception("encode algorithm is not valid."),
+            default => throw new \Exception("encode algorithm is not valid."),
         };
     }
 
@@ -105,15 +101,29 @@ class Encoder implements EncoderInterface
      */
     public function decode(string $data): string
     {
-        $algorithm = $this->algorithm();
-
-        if (is_null($algorithm)) throw new \Exception("decode algorithm is not set.");
-
-        return match ($algorithm) {
+        return match ($this->algorithmForce()) {
             EncodeAlgorithmEnum::BASE64 => base64_decode($data),
             EncodeAlgorithmEnum::HEX    => hex2bin($data),
 
-            default                     => throw new \Exception("decode algorithm is not valid."),
+            default => throw new \Exception("decode algorithm is not valid."),
         };
+    }
+
+    /*----------------------------------------*
+     * Not Public
+     *----------------------------------------*/
+
+    /**
+     * get algorithm force
+     * 
+     * @return \YukataRm\Crypt\Enum\EncodeAlgorithmEnum
+     */
+    protected function algorithmForce(): EncodeAlgorithmEnum
+    {
+        $algorithm = $this->algorithm();
+
+        if (is_null($algorithm)) throw new \Exception("algorithm is not set.");
+
+        return $algorithm;
     }
 }
