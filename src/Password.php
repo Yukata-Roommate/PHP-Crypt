@@ -232,10 +232,10 @@ class Password implements PasswordInterface
      */
     public function generateBy(
         int $length,
-        bool $useAlphabet = true,
-        bool $useNumeric = true,
-        bool $useSymbol = true,
-        string|null $addCharacters = null
+        bool $useAlphabet,
+        bool $useNumeric,
+        bool $useSymbol,
+        string|null $addCharacters
     ): string {
         $characters = $addCharacters ?? "";
 
@@ -274,7 +274,7 @@ class Password implements PasswordInterface
     }
 
     /**
-     * check if hash needs to be rehashed
+     * check password need rehash
      * 
      * @param string $hash
      * @return bool
